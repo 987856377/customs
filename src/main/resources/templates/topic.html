@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+>
+<head>
+    <title>交流互动</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/bootstrap/bootstrap.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/bootstrap-table/bootstrap-table.min.css}" type="text/css"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}" type="text/css"/>
+</head>
+<body class="app">
+    <!-- Navbar-->
+    <header class="app-header">
+        <div sec:authorize="isAuthenticated()" style="margin-top: 15px; margin-left: 80px">
+            <i class="app-menu__icon fa fa-user-circle-o fa-lg"></i><span id="operator" class="app-sidebar__user-name" sec:authentication="name"></span>
+        </div>
+        <h3 style="margin-left: 500px; margin-top: 10px">欢迎使用垃圾分类在线查询平台</h3>
+        <!-- Navbar Right Menu-->
+        <ul class="app-nav">
+            <!-- User Menu-->
+            <li class="dropdown"><a class="app-nav__item" href="#" data-toggle="dropdown" aria-label="Open Profile Menu"><i class="fa fa-user fa-lg"></i></a>
+                <ul class="dropdown-menu settings-menu dropdown-menu-right">
+                    <li><a class="dropdown-item" href="/index"><i class="fa fa-home fa-lg"></i> 主页</a></li>
+                    <li sec:authorize = "hasAuthority('ROLE_ADMIN')"><a class="dropdown-item" href="/user/index"><i class="fa fa-home fa-lg"></i> 管理页面</a></li>
+                    <li sec:authorize = "hasAuthority('ROLE_DBA')"><a class="dropdown-item" href="/user/index"><i class="fa fa-home fa-lg"></i> 管理页面</a></li>
+                    <li sec:authorize="!isAuthenticated()"><a class="dropdown-item" href="/login"><i class="fa fa-sign-in fa-lg"></i> 登录</a></li>
+                    <li sec:authorize="!isAuthenticated()"><a class="dropdown-item" href="/register"><i class="fa fa-registered fa-lg"></i> 注册</a></li>
+                    <li sec:authorize="isAuthenticated()"><a class="dropdown-item" href="/logout"><i class="fa fa-sign-out fa-lg"></i> 退出</a></li>
+                </ul>
+            </li>
+        </ul>
+    </header>
+
+    <div class="container tile" style="width: 85%; margin-top: 90px;">
+        <!-- Nav tabs -->
+        <ul class="nav nav-pills nav-justified" >
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/index}">主页</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/about}">机构概况</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/news}">新闻动态</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/announce}">公告</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/online}">自助服务</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" th:href="@{/topic}">交流互动</a>
+            </li>
+        </ul>
+
+        <div class="container">
+            <div id="toolbar">
+                <button id="btn_leave" class="btn btn-primary"><i class="fa fa-commenting fa-lg"></i>留言</button>
+            </div>
+            <table
+                    id="table"
+                    data-url="/topic/list"
+                    data-toggle="table"
+                    data-height="550"
+                    data-locale="zh-CN"
+                    data-method="get"
+                    data-toolbar="#toolbar"
+
+                    data-search="true"
+                    data-pagination="true"
+                    data-sort-name="date"
+                    data-sort-order="desc"
+                    data-silent-sort="false"
+                    data-page-number="1"
+                    data-pagination-pre-text="上一页"
+                    data-pagination-next-text="下一页"
+
+                    data-response-handler="responseHandler"
+            >
+                <thead>
+                <tr>
+                    <th data-field="username">用户</th>
+                    <th data-field="title">标题</th>
+                    <th data-field="content">内容</th>
+                    <th data-field="date" data-sortable="true">发布日期</th>
+                    <th data-title="操作" data-formatter="operateFormatter" data-events="window.operateEvents"></th>
+                </tr>
+                </thead>
+            </table>
+            <div id="modalTable" class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header  bg-info">
+                            <h5 class="modal-title">回复</h5>
+                            <p id="id"></p>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="form_update" action="" class="form-horizontal form-bordered form-row-strippe" data-toggle="validator" enctype="multipart/form-data">
+                                <div class="container">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div style="width: 65px">
+                                                <span>内容</span>
+                                            </div>
+                                            <div style="width: 350px">
+                                                <input type="text" id="content" name="content" class="form-control" style="height: 300px"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="container">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal" id="btn_reply">回复</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="modalTable1" class="modal fade" tabindex="0" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content" style="width: 650px;">
+                        <div class="modal-header  bg-info">
+                            <h5 class="modal-title">所有回复</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true"></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <table
+                                    id="reply_table"
+                                    data-toggle="table"
+                                    data-height="420"
+                                    data-locale="zh-CN"
+
+                                    data-search="true"
+                                    data-pagination="true"
+                                    data-sort-name="date"
+                                    data-sort-order="desc"
+                                    data-silent-sort="false"
+                                    data-page-number="1"
+                                    data-pagination-pre-text="上一页"
+                                    data-pagination-next-text="下一页"
+
+                                    data-click-to-select="true"
+
+                                    data-response-handler="responseHandler"
+                            >
+                                <thead>
+                                <tr>
+                                    <th data-field="username">回复人</th>
+                                    <th data-field="content">回复内容</th>
+                                    <th data-field="date" data-sortable="true">回复日期</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="container">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer container">
+        <span>版权所有：2016级软件设计3班--许振奎</span>
+        <br>
+        <span>地址: 南阳市宛城区枣林街道南阳理工学院</span>
+        <br>
+        <span>Copyright@垃圾在线</span>
+        <span><a href="http://www.miibeian.gov.cn" target="_blank">京IC备88888888号</a></span>
+    </div>
+    <script th:src="@{/jquery/jquery-3.4.1.js}" type="text/javascript"></script>
+    <script th:src="@{/popper/popper.min.js}" type="text/javascript"></script>
+    <script th:src="@{/bootstrap/bootstrap.min.js}" type="text/javascript"></script>
+    <script th:src="@{/bootstrap/tableExport.min.js}" type="text/javascript"></script>
+    <script th:src="@{/bootstrap-table/bootstrap-table.min.js}" type="text/javascript"></script>
+    <script th:src="@{/bootstrap-table/bootstrap-table-locale-all.min.js}" type="text/javascript"></script>
+    <script th:src="@{/bootstrap-table/bootstrap-table-export.min.js}" type="text/javascript"></script>
+    <script th:src="@{/sweetalert/sweetalert.min.js}" type="text/javascript"></script>
+
+    <script th:src="@{/js/topic.js}" type="text/javascript"></script>
+</body>
+</html>

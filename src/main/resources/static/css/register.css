@@ -1,0 +1,20 @@
+p.error {
+    font-weight: bold;
+    color: red;
+}
+
+#register-container{
+    text-align: center;
+    width: 600px;
+    margin-top: 80px;
+}
+
+#register-container .register-tip{
+    width: 140px;
+    text-align: center;
+}
+
+.register-info .input-group input{
+    margin-right: 100px;
+}
+
