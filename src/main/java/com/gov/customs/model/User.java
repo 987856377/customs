@@ -38,7 +38,7 @@ public class User implements UserDetails, Serializable {
     @Id
     @Column(name = "u_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)   // 设置主键自动增长
-    private long id = 0;
+    private Long id;
 
     @Column(name = "u_username")
     private String username;
